@@ -1,52 +1,35 @@
-# Lottery Number Generators
+# Lottery Number Generator - Powerball & Mega Millions
 
-These tools generate lottery numbers by combining **historical frequency analysis** with **weighted probability systems** to improve your odds *(while remembering that all lotteries remain games of pure chance)*.
+## 📊 Probability-Based Number Generators
+Disclaimer: This code is for personal use and started as a self written code, I then used A.I. to help me incorporate the crazy idea of measuring probability based on the machines measurements.
 
----
-How to use:
-* Simply run either nzlottogen.py or megamillionsgen.py
+#### These scripts generate lottery numbers using:
+- **Historical hot numbers** (most frequently drawn)
+- **Physics-based machine biases** (ball size, chamber dimensions, airflow)
+- **Weighted probability distributions**
 
-## NZ Lotto Powerball Generator
+## 🎰 Key Features
 
-### Key Rules
-- **Main Numbers:** 6 numbers from 1–40  
-- **Powerball:** 1 number from 1–10  
+### For Both Games:
+- ✅ Hot number weighting (3x more likely)
+- ✅ Machine physics probability modeling
+- ✅ Duplicate draw checking
+- ✅ CSV configurable hot numbers
+- ✅ Command-line control
 
-### 🔥 Hot Numbers (Based on Historical Data)
-| Type           | Most Frequent Numbers               |
-|----------------|-------------------------------------|
-| Main Numbers   | 23, 32, 36, 17, 40, 13, 5          |
-| Powerball      | 1, 5, 6, 9                          |
+### Powerball (NZ):
+- Main numbers: 1-40 (pick 6)
+- Powerball: 1-10
+- Hot mains: [23, 32, 36, 17, 40, 13, 5]
+- Hot Powerballs: [1, 5, 6, 9]
 
-### 📊 Probability Model
-**Weighted Selection:**
-- Base weight for all numbers: `1.0`  
-- Hot numbers get `3x` weight (`3.0`)  
-- Probabilities normalize to 100%:  
-  ```python
-  weights /= np.sum(weights)  # Ensures ∑(probabilities) = 1
+### Mega Millions (USA):
+- Main numbers: 1-70 (pick 5)
+- Mega Ball: 1-25
+- Hot mains: [17, 31, 10, 20, 39, 4, 23, 14, 48, 70, 3, 46, 29, 64, 53]
+- Hot MegaBalls: [22, 9, 24, 11, 19, 3, 10, 17, 4]
 
-## USA Mega Millions Generator
-
-### Key Rules
-- **Main Numbers:** 5 numbers from 1–70  
-- **Mega Ball:** 1 number from 1–25  
-- **Draw Days:** Tuesday and Friday  
-
-### 🔥 Hot Numbers (Based on Historical Data)
-| Type           | Most Frequent Numbers (Last 5 Years) |
-|----------------|--------------------------------------|
-| Main Numbers   | 17, 31, 10, 20, 39, 4, 23, 14, 48   |
-| Mega Ball      | 22, 9, 24, 11, 19                   |
-| Least Drawn    | 65, 66, 67, 68, 69, 70 (Main)       |
-|                | 1, 2, 3, 25 (Mega Ball)             |
-
-### 📊 Probability Model
-**Weighted Selection System:**
-- Base weight for all numbers: `1.0`  
-- Hot numbers get `3.5x` weight (`3.5`)  
-- Cold numbers get `0.7x` weight (`0.7`)  
-- Probabilities normalize to 100%:  
-  ```python
-  weights = np.where(is_hot, 3.5, np.where(is_cold, 0.7, 1.0))
-  weights /= np.sum(weights)  # Normalization
+## ⚙️ Usage
+```bash
+python powerball.py -n 10  # Generate 10 Powerball sets
+python megamillions.py -n 15  # Generate 15 Mega Millions sets
