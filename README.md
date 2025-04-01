@@ -31,5 +31,5 @@ Disclaimer: This code is for personal use and started as a self written code, I 
 
 ## ⚙️ Usage
 ```bash
-python powerball.py -n 10  # Generate 10 Powerball sets
+python nzlottogen.py -n 10  # Generate 10 Powerball sets
 python megamillions.py -n 15  # Generate 15 Mega Millions sets
