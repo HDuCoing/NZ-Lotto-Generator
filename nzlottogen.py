@@ -8,7 +8,7 @@ import random
 data = pd.read_csv("hotnumbers.csv")
 hot_numbers = data["Number"].tolist()
 
-# Fetch Lotto results from your preferred website
+# Fetch Lotto results from historical numbers website
 url = 'http://www.lottoshop.co.nz/my-lotto-results-nz'
 response = requests.get(url)
 
@@ -42,25 +42,14 @@ for span in soup.find_all('span'):
             previous_powerballs.append(int(powerball_text))
 
 
-# Fibonacci function
-def fib(n):
-    a, b = 0, 1
-    fib_nums = []
-    for _ in range(n):
-        fib_nums.append(a)
-        a, b = b, a + b
-    return fib_nums
-
-
+# Generate unique and less commonly picked numbers
 def generate_numbers():
-    fib_nums = fib(10)
-    selected_numbers = list(set(fib_nums + hot_numbers))  # Merge Fibonacci and hot numbers
+    # Avoid common picks (1-31) and favor numbers 32-40
+    uncommon_numbers = list(range(32, 41))
+    common_numbers = list(range(1, 32))
 
-    # Ensure weights align with 1-40 range
-    weights = [0.020] * 40
-    for num in selected_numbers:
-        if 1 <= num <= 40:
-            weights[num - 1] = 0.030  # Increase probability for selected numbers
+    # Assign lower weights to common numbers and higher weights to uncommon numbers
+    weights = [0.015 if n in common_numbers else 0.035 for n in range(1, 41)]
 
     # Normalize weights to sum to 1
     weights = np.array(weights)
@@ -68,7 +57,7 @@ def generate_numbers():
 
     # Generate unique lotto numbers
     new_lotto_numbers = np.random.choice(range(1, 41), size=6, replace=False, p=weights)
-    random_powerball_num = random.choice(range(1, 11))
+    random_powerball_num = random.choice(range(1, 10)) # exclude 10
 
     return new_lotto_numbers.tolist(), random_powerball_num
 
