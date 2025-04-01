@@ -2,11 +2,17 @@ import numpy as np
 import pandas as pd
 from bs4 import BeautifulSoup
 import requests
-import random
 
-# Load hot numbers
-data = pd.read_csv("hotnumbers.csv")
-hot_numbers = data["Number"].tolist()
+# Hot numbers based on analysis
+hot_main_numbers = [23, 32, 36, 17, 40, 13, 5]  # Most frequent main numbers
+hot_powerballs = [1, 5, 6, 9]  # Most frequent Powerball numbers
+
+# Load hot numbers from CSV (if you still want to use this)
+try:
+    data = pd.read_csv("hotnumbers.csv")
+    hot_numbers = data["Number"].tolist()
+except FileNotFoundError:
+    hot_numbers = hot_main_numbers  # Fallback to our analysis
 
 # Fetch Lotto results from historical numbers website
 url = 'http://www.lottoshop.co.nz/my-lotto-results-nz'
@@ -42,24 +48,42 @@ for span in soup.find_all('span'):
             previous_powerballs.append(int(powerball_text))
 
 
-# Generate unique and less commonly picked numbers
+# Generate numbers with preference for hot numbers
 def generate_numbers():
-    # Avoid common picks (1-31) and favor numbers 32-40
-    uncommon_numbers = list(range(32, 41))
-    common_numbers = list(range(1, 32))
+    # Create weighted probabilities
+    all_numbers = list(range(1, 41))
+    weights = np.ones(40) * 1.0  # Base weight
 
-    # Assign lower weights to common numbers and higher weights to uncommon numbers
-    weights = [0.015 if n in common_numbers else 0.035 for n in range(1, 41)]
+    # Increase weight for hot numbers
+    for num in hot_main_numbers:
+        weights[num - 1] = 3.0  # 3x more probability
 
-    # Normalize weights to sum to 1
-    weights = np.array(weights)
+    # Normalize weights
     weights /= weights.sum()
 
     # Generate unique lotto numbers
-    new_lotto_numbers = np.random.choice(range(1, 41), size=6, replace=False, p=weights)
-    random_powerball_num = random.choice(range(1, 10)) # exclude 10
+    while True:
+        new_lotto_numbers = np.random.choice(
+            all_numbers,
+            size=6,
+            replace=False,
+            p=weights
+        )
+        # Ensure we have at least 2 hot numbers in the selection
+        if len(set(new_lotto_numbers) & set(hot_main_numbers)) >= 2:
+            break
 
-    return new_lotto_numbers.tolist(), random_powerball_num
+    # Powerball with preference for hot powerballs
+    powerball_weights = [3.0 if n in hot_powerballs else 1.0 for n in range(1, 11)]
+    powerball_weights = np.array(powerball_weights)
+    powerball_weights /= powerball_weights.sum()
+
+    random_powerball_num = np.random.choice(
+        range(1, 11),
+        p=powerball_weights
+    )
+
+    return sorted(new_lotto_numbers.tolist()), random_powerball_num
 
 
 # Generate 30 sets of numbers and check for previous draws
